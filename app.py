@@ -1,21 +1,25 @@
 from flask import Flask, request, jsonify
+from threading import Lock
 
+state_lock = Lock()
 app = Flask(__name__)
 votes = set()
 likes = [0] * 100
 dislikes = [0] * 100
+
 
 @app.route('/<int:id>//<int:decision>', methods=['GET'])
 def vote(id, decision):
     global votes
     ip_addr = request.remote_addr
     vote = str(ip_addr) + str(id)
-    if not vote in votes:
-        votes.add(vote)
-        if decision == 0:
-            likes[id % 100] += 1
-        else:
-            dislikes[id % 100] += 1
+    with state_lock:
+        if not vote in votes:
+            votes.add(vote)
+            if decision == 0:
+                likes[id % 100] += 1
+            else:
+                dislikes[id % 100] += 1
     return ('', 204)
 
 
