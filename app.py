@@ -1,44 +1,20 @@
-from flask import Flask, request, jsonify
-from threading import Lock
+import os
+import redis
+from flask import Flask
 
-state_lock = Lock()
 app = Flask(__name__)
-votes = set()
-likes = [0] * 100
-dislikes = [0] * 100
+db=redis.from_url(os.environ['redis://default:hhzGbM0eRTNRSiXTwC8asXCAuAME0sqj@redis-16661.c242.eu-west-1-2.ec2.cloud.redislabs.com:16661'])
 
 
-@app.route('/<int:id>//<int:decision>', methods=['GET'])
-def vote(id, decision):
-    global votes
-    ip_addr = request.remote_addr
-    vote = str(ip_addr) + str(id)
-    with state_lock:
-        if not vote in votes:
-            votes.add(vote)
-            if decision == 0:
-                likes[id % 100] += 1
-            else:
-                dislikes[id % 100] += 1
-    return ('', 204)
+@app.route('/')
+def hello_world():
+    name=db.get('name') or'World'
+    return 'Hello %s!' % name
 
-
-@app.route('/reset', methods=['GET'])
-def reset():
-    votes.clear()
-    likes[:] = [0 for _ in likes]
-    dislikes[:] = [0 for _ in likes]
-    return ('', 204)
-
-
-@app.route('/results', methods=['GET'])
-def results():
-    result = {}
-    for i in range(1, 100):
-        result[2*i-1] = likes[i]
-        result[2*i] = dislikes[i]
-    return (jsonify(result))
-
+@app.route('/setname/<name>')
+def setname(name):
+    db.set('name',name)
+    return 'Name updated.'
 
 if __name__ == '__main__':
     app.run()
