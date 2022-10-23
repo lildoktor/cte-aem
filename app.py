@@ -5,8 +5,8 @@ r = redis.Redis(host="ec2-34-255-23-118.eu-west-1.compute.amazonaws.com",
                 port=24360, password="p4fd8396dff901c7c43ad2341e8afa136b004a47214118360491ee4d38edd6966", ssl=True, ssl_cert_reqs=None)
 app = Flask(__name__)
 votes = {}
-l = list(range(200))
-for i in range(200):
+l = list(range(50))
+for i in range(50):
     votes[i] = 0
 
 
@@ -25,7 +25,7 @@ def vote(id, decision):
         if decision == 0:
             r.incr(id)
         else:
-            r.incr(id + 100)
+            r.incr(id + 25)
     return ('', 204)
 
 
@@ -40,9 +40,9 @@ def results():
     global l
     result = {}
     db_res = r.mget(l)
-    for i in range(100):
+    for i in range(25):
         result[2*i] = int(db_res[i])
-        result[2*i + 1] = int(db_res[i+100])
+        result[2*i + 1] = int(db_res[i+25])
     return (jsonify(result))
 
 
