@@ -18,7 +18,7 @@ def initDB():
 
 @app.route('/<int:id>//<int:decision>', methods=['GET'])
 def vote(id, decision):
-    ip_addr = request.remote_addr
+    ip_addr = request.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr)
     vote = str(ip_addr) + str(id)
     if not r.exists(vote):
         r.set(vote, 0)
