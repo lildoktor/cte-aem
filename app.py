@@ -1,20 +1,7 @@
 import os
+from urllib.parse import urlparse
 import redis
-from flask import Flask
 
-app = Flask(__name__)
-db=redis.from_url(os.environ['redis://default:hhzGbM0eRTNRSiXTwC8asXCAuAME0sqj@redis-16661.c242.eu-west-1-2.ec2.cloud.redislabs.com:16661'])
-
-
-@app.route('/')
-def hello_world():
-    name=db.get('name') or'World'
-    return 'Hello %s!' % name
-
-@app.route('/setname/<name>')
-def setname(name):
-    db.set('name',name)
-    return 'Name updated.'
-
-if __name__ == '__main__':
-    app.run()
+url = urlparse(os.environ.get("redis://:p4fd8396dff901c7c43ad2341e8afa136b004a47214118360491ee4d38edd6966@ec2-34-255-23-118.eu-west-1.compute.amazonaws.com:24360"))
+r = redis.Redis(host=url.hostname, port=url.port, username=url.username, password=url.password, ssl=True, ssl_cert_reqs=None)
+r.ping()
