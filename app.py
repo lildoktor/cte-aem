@@ -1,8 +1,8 @@
 from flask import Flask, request, jsonify
 import redis
 
-r = redis.Redis(host="ec2-34-255-23-118.eu-west-1.compute.amazonaws.com",
-                port=24360, password="p4fd8396dff901c7c43ad2341e8afa136b004a47214118360491ee4d38edd6966", ssl=True, ssl_cert_reqs=None)
+r = redis.Redis(host="redis-17001.c226.eu-west-1-3.ec2.cloud.redislabs.com",
+                port=17001, password="fPvlGTuJe7kWPbAxDlzHE8CF2GGInGgQ")
 app = Flask(__name__)
 votes = {}
 l = list(range(50))
